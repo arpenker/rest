@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>高效学习路径 - 优化版脑图</title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", "Roboto", "Helvetica Neue", Arial, sans-serif;
+    background-color: #f8f9fa; /* 更柔和的背景色 */
+  }
+  #chart-container {
+    padding: 30px;
+    box-sizing: border-box;
+  }
+  #chart {
+    width: 100%;
+    height: 90vh; /* 留出一些空间给标题 */
+  }
+  h1 {
+    text-align: center;
+    color: #343a40;
+    font-weight: 300;
+  }
+</style>
+<!-- 引入 ECharts -->
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+</head>
+<body>
+
+<h1>高效学习路径</h1>
+<div id="chart-container">
+  <div id="chart"></div>
+</div>
+
+<script>
+/* ---------- 1. 数据 ---------- */
+const data = {
+  name: '高效学习',
+  children: [
+    {
+      name: '① 时间管理',
+      children: [
+        {name: '番茄工作法'},
+        {name: '时段划分'},
+        {name: '任务优先级矩阵'},
+        {name: '任务拆分（GTD 等）'},
+        {name: '目标设定（SMART）'}
+      ]
+    },
+    {
+      name: '② 记忆技巧',
+      children: [
+        {name: '间隔重复（Anki 等）'},
+        {name: '视觉化联想'},
+        {name: '关键词法（首字母缩写）'},
+        {name: '联接故事'},
+        {name: '物理位置法（记忆宫殿）'}
+      ]
+    },
+    {
+      name: '③ 学习资源',
+      children: [
+        {name: '公开课平台'},
+        {name: '学术文献库'},
+        {name: '开源教材'},
+        {name: '行业博客 & 专家社交'},
+        {name: '跨学科课程组合'}
+      ]
+    }
+  ]
+};
+
+// 为不同分支定义颜色
+const branchColors = ['#5a9a4b', '#3a86ff', '#e56b6f'];
+
+// 递归地为节点设置样式
+echarts.util.each(data.children, (node, index) => {
+  const color = branchColors[index % branchColors.length];
+  node.itemStyle = { borderColor: color };
+  node.lineStyle = { color: color };
+  echarts.util.each(node.children, (child) => {
+    child.itemStyle = { borderColor: color };
+    child.lineStyle = { color: color };
+  });
+});
+
+
+/* ---------- 2. ECharts 配置 ---------- */
+const option = {
+  tooltip: {
+    trigger: 'item',
+    triggerOn: 'mousemove',
+    backgroundColor: 'rgba(255, 255, 255, 0.95)',
+    borderColor: '#e9ecef',
+    borderWidth: 1,
+    padding: [8, 12],
+    textStyle: {
+      color: '#212529',
+      fontSize: 14,
+    },
+    formatter: '{b}' // 只显示名称，更简洁
+  },
+  series: [{
+    type: 'tree',
+    data: [data],
+
+    // 使用径向布局，视觉效果更现代
+    layout: 'radial',
+
+    // 间距
+    top: '5%', bottom: '5%', left: '5%', right: '5%',
+
+    // 符号（节点）样式
+    symbol: 'circle',
+    symbolSize: 18,
+
+    // 标签（文字）样式
+    label: {
+      show: true,
+      position: 'right',
+      verticalAlign: 'middle',
+      align: 'left',
+      fontSize: 15,
+      color: '#343a40',
+      offset: [12, 0], // 标签与节点的距离
+      formatter: (params) => {
+        // 为根节点和一级节点加粗
+        if (params.treePathInfo.length <= 2) {
+          return `{bold|${params.name}}`;
+        }
+        return params.name;
+      },
+      rich: {
+        bold: {
+          fontWeight: 'bold',
+          fontSize: 17
+        }
+      }
+    },
+
+    // 叶子节点的特殊样式
+    leaves: {
+      label: {
+        position: 'right',
+        verticalAlign: 'middle',
+        align: 'left',
+        fontSize: 14,
+        color: '#495057'
+      },
+      itemStyle: {
+        symbol: 'circle',
+        borderWidth: 1.5,
+      }
+    },
+
+    // 线条样式
+    lineStyle: {
+      width: 1.5,
+      curveness: 0.8, // 增加曲线感
+    },
+
+    // 展开与折叠
+    expandAndCollapse: true,
+    initialTreeDepth: 2, // 默认展开两层
+
+    // 动画效果
+    animationDuration: 550,
+    animationEasing: 'cubicInOut',
+
+    // 节点样式
+    itemStyle: {
+      color: '#f8f9fa', // 节点填充色与背景色一致
+      borderWidth: 2.5,
+      shadowColor: 'rgba(0, 0, 0, 0.08)',
+      shadowBlur: 10,
+      shadowOffsetX: 2,
+      shadowOffsetY: 2
+    },
+
+    // 高亮状态
+    emphasis: {
+      focus: 'descendant',
+      scale: 1.05, // 轻微放大
+      itemStyle: {
+        shadowBlur: 15
+      },
+      lineStyle: {
+        width: 2.5
+      }
+    }
+  }]
+};
+
+/* ---------- 3. 渲染图表 ---------- */
+const chartDom = document.getElementById('chart');
+const myChart = echarts.init(chartDom);
+myChart.setOption(option);
+
+/* ---------- 4. 响应式调整 ---------- */
+window.addEventListener('resize', () => myChart.resize());
+</script>
+</body>
+</html>
