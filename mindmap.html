@@ -35,12 +35,16 @@
 </div>
 
 <script>
-/* ---------- 1. 数据 ---------- */
+/* ---------- 1. 数据 (修复版) ---------- */
+// 样式直接在数据中定义，避免了错误的动态修改
 const data = {
   name: '高效学习',
   children: [
     {
       name: '① 时间管理',
+      // 为这个分支设定统一样式
+      lineStyle: { color: '#5a9a4b' },
+      itemStyle: { borderColor: '#5a9a4b' },
       children: [
         {name: '番茄工作法'},
         {name: '时段划分'},
@@ -51,6 +55,9 @@ const data = {
     },
     {
       name: '② 记忆技巧',
+      // 为这个分支设定统一样式
+      lineStyle: { color: '#3a86ff' },
+      itemStyle: { borderColor: '#3a86ff' },
       children: [
         {name: '间隔重复（Anki 等）'},
         {name: '视觉化联想'},
@@ -61,6 +68,9 @@ const data = {
     },
     {
       name: '③ 学习资源',
+      // 为这个分支设定统一样式
+      lineStyle: { color: '#e56b6f' },
+      itemStyle: { borderColor: '#e56b6f' },
       children: [
         {name: '公开课平台'},
         {name: '学术文献库'},
@@ -71,20 +81,6 @@ const data = {
     }
   ]
 };
-
-// 为不同分支定义颜色
-const branchColors = ['#5a9a4b', '#3a86ff', '#e56b6f'];
-
-// 递归地为节点设置样式
-echarts.util.each(data.children, (node, index) => {
-  const color = branchColors[index % branchColors.length];
-  node.itemStyle = { borderColor: color };
-  node.lineStyle = { color: color };
-  echarts.util.each(node.children, (child) => {
-    child.itemStyle = { borderColor: color };
-    child.lineStyle = { color: color };
-  });
-});
 
 
 /* ---------- 2. ECharts 配置 ---------- */
@@ -106,17 +102,13 @@ const option = {
     type: 'tree',
     data: [data],
 
-    // 使用径向布局，视觉效果更现代
     layout: 'radial',
 
-    // 间距
     top: '5%', bottom: '5%', left: '5%', right: '5%',
 
-    // 符号（节点）样式
     symbol: 'circle',
     symbolSize: 18,
 
-    // 标签（文字）样式
     label: {
       show: true,
       position: 'right',
@@ -124,9 +116,8 @@ const option = {
       align: 'left',
       fontSize: 15,
       color: '#343a40',
-      offset: [12, 0], // 标签与节点的距离
+      offset: [12, 0],
       formatter: (params) => {
-        // 为根节点和一级节点加粗
         if (params.treePathInfo.length <= 2) {
           return `{bold|${params.name}}`;
         }
@@ -140,7 +131,6 @@ const option = {
       }
     },
 
-    // 叶子节点的特殊样式
     leaves: {
       label: {
         position: 'right',
@@ -155,23 +145,22 @@ const option = {
       }
     },
 
-    // 线条样式
+    // 全局线条样式 (会被data中的具体样式覆盖)
     lineStyle: {
       width: 1.5,
-      curveness: 0.8, // 增加曲线感
+      curveness: 0.8,
     },
 
-    // 展开与折叠
     expandAndCollapse: true,
-    initialTreeDepth: 2, // 默认展开两层
+    initialTreeDepth: 2,
 
-    // 动画效果
     animationDuration: 550,
     animationEasing: 'cubicInOut',
 
-    // 节点样式
+    // 全局节点样式 (会被data中的具体样式覆盖)
     itemStyle: {
-      color: '#f8f9fa', // 节点填充色与背景色一致
+      color: '#f8f9fa',
+      borderColor: '#6c757d', // 默认或根节点颜色
       borderWidth: 2.5,
       shadowColor: 'rgba(0, 0, 0, 0.08)',
       shadowBlur: 10,
@@ -179,10 +168,9 @@ const option = {
       shadowOffsetY: 2
     },
 
-    // 高亮状态
     emphasis: {
       focus: 'descendant',
-      scale: 1.05, // 轻微放大
+      scale: 1.05,
       itemStyle: {
         shadowBlur: 15
       },
