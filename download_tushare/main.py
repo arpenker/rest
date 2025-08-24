@@ -11,7 +11,7 @@ def main():
     # 创建一个顶层解析器
     parser = argparse.ArgumentParser(
         description="Tushare A股30分钟K线数据同步工具。",
-        epilog="使用 'python -m stock_data_sync <command> --help' 来查看具体命令的帮助信息。"
+        epilog="使用 'python -m download_tushare <command> --help' 来查看具体命令的帮助信息。"
     )
 
     # 创建一个子命令解析器
